@@ -4,7 +4,6 @@ using System.Net.Http.Headers;
 using System.Text;
 
 namespace CoinChronicle
-    // This is the Chronicle containing, managing - adding, removing, editing chronicle entries.
 {
     public class Chronicle
     {
@@ -15,5 +14,30 @@ namespace CoinChronicle
             _chronicle = new List<ChronicleEntry>();
         }
 
+        public IReadOnlyList<ChronicleEntry> Entries => _chronicle.AsReadOnly();
+
+        public void PrintAll()
+        {
+            foreach (var e in _chronicle.OrderBy(e => e.Date))
+            {
+                Console.WriteLine(e);
+            }
+        }
+
+        public void PrintDebit()
+        {
+            foreach (var e in _chronicle.Where(e=> !e.IsCredit).OrderBy(e => e.Date))
+            {
+                Console.WriteLine(e);
+            }
+        }
+
+        public void PrintCredit()
+        {
+            foreach (var e in _chronicle.Where(e => e.IsCredit).OrderBy(e=>e.Date))
+            {
+                Console.WriteLine(e);
+            }
+        }
     }
 }

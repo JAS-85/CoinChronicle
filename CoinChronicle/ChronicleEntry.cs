@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CoinChronicle
-// This is the Chronicle entries of debit or credit
 {
-    class ChronicleEntry
+    public class ChronicleEntry
     {
         public Guid Id { get; }
 
