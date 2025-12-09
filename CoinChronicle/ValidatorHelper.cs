@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace CoinChronicle
@@ -17,9 +18,7 @@ namespace CoinChronicle
             }
 
             // todo: implement specific error handlings?
-            if (input.IsWhiteSpace()) { return false; }
-            if (input == null) { return false; }
-            if (input == "") { return false; }
+            if (string.IsNullOrEmpty(input)) { return false; }
 
             else return false;
         }
@@ -28,12 +27,35 @@ namespace CoinChronicle
         {
             if (input.ToString().ToLower().Equals("a") || input.ToString().ToLower().Equals("c") ||
                 input.ToString().ToLower().Equals("d"))
-            { 
+            {
                 return true;
             }
             else return false;
         }
 
+        public bool IsDate(string input)
+        {
+            if (DateTime.TryParseExact(input, "yyyy-MM-dd",
+            CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
+            {
+                return true;
+            }
+
+            if (string.IsNullOrWhiteSpace(input)) { return false; }
+
+            else return false;
+        }
+        public bool IsDecimal(string input)
+        {
+            if (Decimal.TryParse(input, out _))
+            {
+                return true;
+            }
+
+            if (string.IsNullOrWhiteSpace(input)) { return false; }
+
+            else return false;
+        }
 
     }
 }
