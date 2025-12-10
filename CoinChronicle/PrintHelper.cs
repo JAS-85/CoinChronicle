@@ -32,7 +32,7 @@ namespace CoinChronicle
             Console.Write("(");
             PrintHelper.Magenta("1");
             Console.Write(") ");
-            Console.Write("Show items (All");
+            Console.Write("Show chronicle entries (All");
             PrintHelper.Cyan("/");
             Console.Write("Expense(s)");
             PrintHelper.Cyan("/");

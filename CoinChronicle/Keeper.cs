@@ -23,11 +23,10 @@ namespace CoinChronicle
             }
         }
 
-        public static void Save(string path, IEnumerable<ChronicleEntry> entries)
+        public static void Save(string path, IReadOnlyList<ChronicleEntry> entries)
         {
             var options = new JsonSerializerOptions { WriteIndented = true };
             var json = JsonSerializer.Serialize(entries, options);
-
             var temp = path + ".tmp";
             File.WriteAllText(temp, json);
             File.Copy(temp, path, overwrite: true);

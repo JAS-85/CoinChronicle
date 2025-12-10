@@ -12,7 +12,7 @@ namespace CoinChronicle
             var check = input;
 
             if (input.ToString().ToLower().Equals("1") || input.ToString().ToLower().Equals("2") ||
-                input.ToString().ToLower().Equals("3") || input.ToString().ToLower().Equals("3"))
+                input.ToString().ToLower().Equals("3") || input.ToString().ToLower().Equals("4"))
             {
                 return true;
             }
@@ -33,6 +33,7 @@ namespace CoinChronicle
             else return false;
         }
 
+        // todo: set limit of valid timeframe
         public bool IsDate(string input)
         {
             if (DateTime.TryParseExact(input, "yyyy-MM-dd",
