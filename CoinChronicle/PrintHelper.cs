@@ -1,83 +1,69 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CoinChronicle
-{ //todo: look into less tedious way of creating suitable interface
+{
     static public class PrintHelper
     {
         public static void IntroText(string balancePlaceholder)
         {
-            PrintHelper.Cyan(">> ");
+            WritePrompt();
             Console.Write("Welcome to CoinChronicle\n");
 
-            PrintHelper.Cyan(">> ");
-            Console.Write($"You have currently {balancePlaceholder}x kr on you account.\n");
+            WritePrompt();
+            Console.Write($"Your current balance: {balancePlaceholder}\n");
 
-
-            PrintHelper.Cyan(">> ");
-            Console.Write("Pick an option:\n");
-
-            PrintHelper.WriteChoice1();
-            PrintHelper.WriteChoice2();
-            PrintHelper.WriteChoice3();
-            PrintHelper.WriteChoice4();
+            WritePrompt();
+            Console.Write("Choose an option:\n");
 
         }
-
-
+        
         public static void WriteChoice1()
         {
-            PrintHelper.Cyan(">> ");
+            WritePrompt();
             Console.Write("(");
-            PrintHelper.Magenta("1");
+            Magenta("1");
             Console.Write(") ");
             Console.Write("Show chronicle entries (All");
-            PrintHelper.Cyan("/");
+            Cyan("/");
             Console.Write("Expense(s)");
-            PrintHelper.Cyan("/");
+            Cyan("/");
             Console.Write("Income(s)\n");
-
         }
 
         public static void WriteChoice2()
         {
-            PrintHelper.Cyan(">> ");
+            WritePrompt();
             Console.Write("(");
-            PrintHelper.Magenta("2");
+            Magenta("2");
             Console.Write(") ");
             Console.Write("Add new Expense");
-            PrintHelper.Cyan("/");
+            Cyan("/");
             Console.Write("Income\n");
-
         }
 
         public static void WriteChoice3()
         {
-            PrintHelper.Cyan(">> ");
+            WritePrompt();
             Console.Write("(");
-            PrintHelper.Magenta("3");
+            Magenta("3");
             Console.Write(") ");
             Console.Write("Edit Item (edit, remove)\n");
-
         }
 
         public static void WriteChoice4()
         {
-            PrintHelper.Cyan(">> ");
+            WritePrompt();
             Console.Write("(");
-            PrintHelper.Magenta("4");
+            Magenta("4");
             Console.Write(") ");
             Console.Write("Save and Quit\n");
-            PrintHelper.Cyan(">> ");
-
         }
 
         public static void Cyan(string text)
         {
             var pre = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write($"{text}");
+            Console.Write(text);
             Console.ForegroundColor = pre;
         }
 
@@ -88,14 +74,36 @@ namespace CoinChronicle
             Console.Write(text);
             Console.ForegroundColor = pre;
         }
-        public static void CyanArrowsMessage(string text)
+
+        public static void WritePrompt()
         {
             var pre = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write(">> ");
             Console.ForegroundColor = pre;
-            Console.Write($"{text}");
-
         }
+
+        public static void CyanArrowsMessage(string text)
+        {
+            WritePrompt();
+            Console.WriteLine(text);
+        }
+
+        public static void Red(string text)
+        {
+            var pre = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write(text);
+            Console.ForegroundColor = pre;
+        }
+
+        public static void Green(string text)
+        {
+            var pre = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(text);
+            Console.ForegroundColor = pre;
+        }
+
     }
 }

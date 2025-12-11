@@ -1,134 +1,134 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using System.Net.Http.Headers;
-using System.Text;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Linq;
 
 namespace CoinChronicle
 {
-
-    // todo: formating of printing, add comment/title prop in print. Colour entry according to IsCredit (or debit).
-    // format print of date to exclude t
     public class Chronicle
     {
-
         private readonly List<ChronicleEntry> _chronicle;
 
         public Chronicle()
         {
             _chronicle = new List<ChronicleEntry>();
-
         }
 
         public IReadOnlyList<ChronicleEntry> Entries => _chronicle.AsReadOnly();
 
         public void Print(string amountFilter, string sortType, string sortOrder)
         {
+            Console.Write("\n\n");
             IEnumerable<ChronicleEntry> query = _chronicle;
             if (amountFilter == "c") query = query.Where(e => e.IsCredit);
             else if (amountFilter == "d") query = query.Where(e => !e.IsCredit);
-            // "a" or anything else => no filter (All)
 
             bool desc = sortOrder == "desc" || sortOrder == "d";
             if (sortType == "m")
                 query = desc ? query.OrderByDescending(e => e.Date) : query.OrderBy(e => e.Date);
-
             else if (sortType == "a")
                 query = desc ? query.OrderByDescending(e => e.Amount) : query.OrderBy(e => e.Amount);
-
             else if (sortType == "t")
                 query = desc ? query.OrderByDescending(e => e.Title) : query.OrderBy(e => e.Title);
-
             else
                 query = desc ? query.OrderByDescending(e => e.Date) : query.OrderBy(e => e.Date);
 
+            Console.WriteLine($"{"ID",-3} {"Date",-10} {"Amount",10} {"Type",-6} {"Title"}");
             foreach (var e in query)
-                Console.WriteLine($"{e.Id}, {e.Date:yyyy-MM-dd}, {e.Amount}, {e.IsCredit}");
-        }
+            {
+                Console.Write($"{e.Id,-3} {e.Date:yyyy-MM-dd} ");
+                if (e.IsCredit)
+                {
+                    PrintHelper.Green($"{e.Amount,10:F2}");
+                }
+                else
+                {
+                    PrintHelper.Red($"{e.Amount,10:F2}");
+                }
+                Console.WriteLine($" {(e.IsCredit ? "Credit" : "Debit"),-6} {e.Title}");
+            }
+            Console.Write("\n\n");
 
+        }
 
         public void FindEntry(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                Console.WriteLine("Invalid id");
+                PrintHelper.CyanArrowsMessage("Invalid id");
                 return;
             }
 
-            var match = _chronicle
-                .Where(e => e.Id == id);
             var entry = _chronicle.FirstOrDefault(e => e.Id == id);
-            if (entry == null) Console.WriteLine("Not found");
+            if (entry == null) PrintHelper.CyanArrowsMessage("Not found");
+
             else
             {
-                Console.WriteLine($"{entry.Id}, {entry.Date}, {entry.Amount}, {entry.IsCredit}");
-                Console.WriteLine("To remove entry press 'R', to Edit press 'E'.");
-                var input = (Console.ReadLine() ?? "").ToLowerInvariant();
-                while (input != "r" &&  input != "e")
+                Console.WriteLine($"{entry.Id}, {entry.Date:yyyy-MM-dd}, {entry.Amount}, {(entry.IsCredit ?
+                    "Credit" : "Debit")}");
+                PrintHelper.CyanArrowsMessage("(R)emove or (E)dit.");
+                PrintHelper.WritePrompt();
+                var input = (Console.ReadLine() ?? "").Trim().ToLowerInvariant();
+                while (input != "r" && input != "e")
                 {
-                    Console.WriteLine("Invalid entry. 'R' to remove, 'E' to edit.");
-                    input = (Console.ReadLine() ?? "").ToLowerInvariant();
+                    PrintHelper.CyanArrowsMessage("Invalid entry. 'R' to remove, 'E' to edit.");
+                    PrintHelper.WritePrompt();
+                    input = (Console.ReadLine() ?? "").Trim().ToLowerInvariant();
                 }
-                if (input == "r") { _chronicle.Remove(entry); }
-                if (input == "e") { Modify(entry); }
-
+                if (input == "r") _chronicle.Remove(entry);
+                if (input == "e") Modify(entry);
             }
         }
 
-        //todo: replace the loop below with program.cs function when created.
         public void Modify(ChronicleEntry entry)
-
         {
-            ValidatorHelper validate = new ValidatorHelper();
-            PrintHelper.CyanArrowsMessage("Enter 'd' for Debit - 'c' for Credit\n");
-            PrintHelper.Cyan(">> ");
-            var input2 = (Console.ReadLine() ?? "").ToLowerInvariant();
-
+            var validate = new ValidatorHelper();
+            PrintHelper.CyanArrowsMessage("(D)ebit or (C)redit");
+            PrintHelper.WritePrompt();
+            var input2 = (Console.ReadLine() ?? "").Trim().ToLowerInvariant();
 
             while (input2 != "d" && input2 != "c")
             {
-                Console.WriteLine("Invalid input. Enter 'C' or 'D'.");
-                input2 = (Console.ReadLine() ?? "").ToLowerInvariant();
+                PrintHelper.CyanArrowsMessage("Invalid input. Enter 'C' or 'D'.");
+                PrintHelper.WritePrompt();
+                input2 = (Console.ReadLine() ?? "").Trim().ToLowerInvariant();
             }
 
-            bool isCredit = true;
-            if (input2 == "d")
-            {
-                isCredit = false;
+            bool isCredit = input2 != "d";
 
-            }
-
-            Console.WriteLine("Enter transactiondate: 'YYYY-MM-DD");
+            PrintHelper.CyanArrowsMessage("Transaction date: 'YYYY-MM-DD'");
+            PrintHelper.WritePrompt();
             input2 = Console.ReadLine();
             while (validate.IsDate(input2) == false)
             {
-                Console.WriteLine("Invalid date format. Enter 'YYYY-MM-DD' use  ' - ' not spaces.");
+                PrintHelper.CyanArrowsMessage("Invalid date format. Enter 'YYYY-MM-DD' use '-' not spaces.");
+                PrintHelper.WritePrompt();
                 input2 = Console.ReadLine();
             }
 
-            DateTime date;
             DateTime.TryParseExact(input2, "yyyy-MM-dd",
-            CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out var date);
 
-            Console.WriteLine("Enter a title for the transaction entry. Letters and numbers - no special characters, no spaces.");
+            PrintHelper.CyanArrowsMessage("Title for entry. No spaces or special characters.");
+            PrintHelper.WritePrompt();
             var title = Console.ReadLine();
             while (string.IsNullOrWhiteSpace(title) || !title.All(char.IsLetterOrDigit))
             {
-                Console.WriteLine("Invalid input. Letters and numbers.");
+                PrintHelper.CyanArrowsMessage("Invalid input. Use letters and numbers.");
+                PrintHelper.WritePrompt();
                 title = Console.ReadLine();
             }
 
-            Console.WriteLine("Enter amount:");
+            PrintHelper.CyanArrowsMessage("Enter amount:");
+            PrintHelper.WritePrompt();
             input2 = Console.ReadLine();
             while (validate.IsDecimal(input2) == false)
             {
-                Console.WriteLine("Invalid input. Numbers and ' , ' if you need decimal values. No spaces, no symbols, no letters.");
+                PrintHelper.CyanArrowsMessage("Invalid input. Numbers and ',' if needed. No spaces, no symbols, no letters.");
+                PrintHelper.WritePrompt();
                 input2 = Console.ReadLine();
             }
-            var amount = decimal.Parse(input2);
+            var amount = decimal.Parse(input2, CultureInfo.InvariantCulture);
 
             entry.Date = date;
             entry.Title = title;
@@ -136,25 +136,22 @@ namespace CoinChronicle
             entry.IsCredit = isCredit;
         }
 
-        public void Add(ChronicleEntry entry)
+        public void Add(ChronicleEntry entry) => _chronicle.Add(entry);
+
+        public void ReplaceAll(IEnumerable<ChronicleEntry> entries)
         {
-            {
-                _chronicle.Add(entry);
-            }
+            _chronicle.Clear();
+            _chronicle.AddRange(entries);
+            int maxId = _chronicle
+                .Select(e => int.TryParse(e.Id, out var v) ? v : 0)
+                .DefaultIfEmpty(0)
+                .Max();
+            ChronicleEntry.SetNextId(maxId + 1);
         }
 
-            public void ReplaceAll(IEnumerable<ChronicleEntry> entries)
-            {
-                _chronicle.Clear();
-                _chronicle.AddRange(entries);
-                int maxId = _chronicle
-                    .Select(e => int.TryParse(e.Id, out var v) ? v : 0)
-                    .DefaultIfEmpty(0)
-                    .Max();
-                ChronicleEntry.SetNextId(maxId + 1);
-            }
-        
-
-
+        public decimal GetBalance()
+        {
+            return _chronicle.Sum(e => e.IsCredit ? e.Amount : -e.Amount);
+        }
     }
 }

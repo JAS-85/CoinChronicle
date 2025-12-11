@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
 using System.Text.Json;
 
 namespace CoinChronicle
@@ -13,16 +13,15 @@ namespace CoinChronicle
             try
             {
                 var json = File.ReadAllText(path);
-                return JsonSerializer.Deserialize<List<ChronicleEntry>>(json)
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                return JsonSerializer.Deserialize<List<ChronicleEntry>>(json, options)
                        ?? new List<ChronicleEntry>();
             }
             catch
             {
-                // On error, return empty list (caller can decide how to report)
                 return new List<ChronicleEntry>();
             }
         }
-
         public static void Save(string path, IReadOnlyList<ChronicleEntry> entries)
         {
             var options = new JsonSerializerOptions { WriteIndented = true };

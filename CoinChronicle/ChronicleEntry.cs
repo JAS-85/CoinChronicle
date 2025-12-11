@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CoinChronicle
 {
@@ -18,15 +16,9 @@ namespace CoinChronicle
 
         public bool IsCredit { get; set; }
 
-
-        // Constructor taking id was necessary to reconstruct on loading
-        public ChronicleEntry(string id, DateTime date, string title, decimal amount, bool isCredit)
+        // For deserialization
+        public ChronicleEntry()
         {
-            Id = id;
-            Date = date;
-            Title = title;
-            Amount = amount;
-            IsCredit = isCredit;
         }
 
         public ChronicleEntry(DateTime date, string title, decimal amount, bool isCredit)
@@ -40,4 +32,4 @@ namespace CoinChronicle
 
         internal static void SetNextId(int next) => _nextId = next;
     }
-    }
+}
