@@ -1,39 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace CoinChronicle
 {
     public class ValidatorHelper
     {
-        public bool MainMenuCheck(string input)
-        {
-            var check = input;
+        public bool MainMenuCheck(string input) =>
+            input is not null && (input == "1" || input == "2" || input == "3" || input == "4");
 
-            if (input.ToString().ToLower().Equals("1") || input.ToString().ToLower().Equals("2") ||
-                input.ToString().ToLower().Equals("3") || input.ToString().ToLower().Equals("3"))
+        public bool Menu1Check(string input) =>
+            input is not null && (input.ToLowerInvariant() == "a" || 
+            input.ToLowerInvariant() == "c" || input.ToLowerInvariant() == "d");
+
+        // todo: set limit of valid timeframe
+        public bool IsDate(string input)
+        {
+            if (DateTime.TryParseExact(input, "yyyy-MM-dd",
+            CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
             {
                 return true;
             }
 
-            // todo: implement specific error handlings?
-            if (input.IsWhiteSpace()) { return false; }
-            if (input == null) { return false; }
-            if (input == "") { return false; }
+            if (string.IsNullOrWhiteSpace(input)) { return false; }
 
             else return false;
         }
-
-        public bool Menu1Check(string input)
+        public bool IsDecimal(string input)
         {
-            if (input.ToString().ToLower().Equals("a") || input.ToString().ToLower().Equals("c") ||
-                input.ToString().ToLower().Equals("d"))
-            { 
+            if (Decimal.TryParse(input, out _))
+            {
                 return true;
             }
+
+            if (string.IsNullOrWhiteSpace(input)) { return false; }
+
             else return false;
         }
-
 
     }
 }
